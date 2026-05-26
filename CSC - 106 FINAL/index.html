@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="global.css">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .error-msg {
+    position: absolute;
+    top: 640px;
+    left: 523px;
+    width: 382px;
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 13px;
+    color: #ef4444;
+    text-align: center;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="login-page">
+  <div class="login-screen">
+    <div class="rectangle"></div>
+    <div class="text-wrapper">Barangay Poblacion, Las Nieves</div>
+    <div class="div"></div>
+
+    <input class="img" id="emailInput" type="email" placeholder="Enter your email" />
+    <input class="rectangle-2" id="passwordInput" type="password" placeholder="Enter your password" />
+
+    <div class="text-wrapper-2" style="font-size: 50px;">🏛️</div>
+    <div class="text-wrapper-3">Email Address</div>
+    <div class="text-wrapper-4">Password</div>
+
+    <div class="rectangle-3" id="signInBtn" style="cursor:pointer;"></div>
+    <div class="text-wrapper-7" id="signInLabel" style="cursor:pointer;">Sign in</div>
+
+    <div class="error-msg" id="errorMsg">Invalid email or password.</div>
+
+    <div class="don-t-have-an">Don't have an account?</div>
+    <a class="text-wrapper-8" href="register.html">Register here</a>
+    <div class="text-wrapper-9">BARFS</div>
+    <div class="text-wrapper-10">Automated Financial Reporting System</div>
+  </div>
+</div>
+
+<script>
+  // If already logged in, go to dashboard
+  if (sessionStorage.getItem('barfs_user')) {
+    window.location.href = 'dashboard.html';
+  }
+
+  function doLogin() {
+    const email = document.getElementById('emailInput').value.trim();
+    const password = document.getElementById('passwordInput').value;
+    const errorMsg = document.getElementById('errorMsg');
+
+    if (!email || !password) {
+      errorMsg.textContent = 'Please enter your email and password.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('barfs_users') || '[]');
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (user) {
+      sessionStorage.setItem('barfs_user', JSON.stringify(user));
+      window.location.href = 'dashboard.html';
+    } else {
+      errorMsg.textContent = 'Invalid email or password.';
+      errorMsg.style.display = 'block';
+    }
+  }
+
+  document.getElementById('signInBtn').addEventListener('click', doLogin);
+  document.getElementById('signInLabel').addEventListener('click', doLogin);
+
+  // Allow Enter key
+  document.getElementById('emailInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('passwordInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+</script>
+</body>
+</html>

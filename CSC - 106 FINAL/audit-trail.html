@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="global.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/audit.css">
+</head>
+<body>
+<div class="dashboard-page">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <span class="sidebar-icon">🏛️</span>
+      <div>
+        <div class="sidebar-title">BAFRS</div>
+        <div class="sidebar-subtitle">Barangay Poblacion<br>Las Nieves, Agusan del Norte</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="transactions.html" class="nav-item">Transactions</a>
+      <a href="financial-reports.html" class="nav-item">Financial Reports</a>
+      <a href="audit-trail.html" class="nav-item active">Audit Trail</a>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="topbar-title">Audit Trail</div>
+      <div class="topbar-right">
+        <div class="topbar-user">
+          <span class="topbar-name" id="userName">—</span>
+          <span class="topbar-role" id="userRole">—</span>
+        </div>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="summary-label">Total Logs</div>
+        <div class="summary-value" id="totalLogs">0</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Today's Actions</div>
+        <div class="summary-value" id="todayActions">0</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Failed Logins</div>
+        <div class="summary-value" id="failedLogins">0</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Active User</div>
+        <div class="summary-value" id="activeUser" style="font-size:15px;">—</div>
+      </div>
+    </div>
+
+    <!-- Activity Log Table -->
+    <div class="table-wrapper" style="margin-top:20px;">
+      <div class="table-header">
+        <span class="table-title">Activity Log</span>
+        <button class="filter-export-btn" id="exportBtn">⬇ Export CSV</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Entry Time</th>
+              <th>User</th>
+              <th>Role</th>
+              <th>Action</th>
+              <th>Details</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody">
+            <tr>
+              <td colspan="6" style="text-align:center;color:#94a3b8;padding:32px;">No activity logs yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- LOGOUT CONFIRM MODAL -->
+<div class="modal-overlay" id="logoutOverlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Confirm Logout</span>
+      <button class="modal-close" id="closeLogoutModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:#475569;line-height:1.6;">Are you sure you want to log out? Your session will be ended and you will be redirected to the login page.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="cancelLogout">Cancel</button>
+      <button class="btn-delete" id="confirmLogout">Logout</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Auth guard
+  const userJson = sessionStorage.getItem('barfs_user');
+  if (!userJson) { window.location.href = 'index.html'; }
+  else {
+    const user = JSON.parse(userJson);
+    document.getElementById('userName').textContent = user.fullName || user.email;
+    document.getElementById('userRole').textContent = user.role || '';
+    document.getElementById('activeUser').textContent = user.fullName || user.email;
+  }
+
+  // Logout with confirm modal
+  document.getElementById('logoutBtn').addEventListener('click', function () {
+    document.getElementById('logoutOverlay').classList.add('active');
+  });
+
+  document.getElementById('closeLogoutModal').addEventListener('click', closeLogout);
+  document.getElementById('cancelLogout').addEventListener('click', closeLogout);
+
+  function closeLogout() {
+    document.getElementById('logoutOverlay').classList.remove('active');
+  }
+
+  document.getElementById('confirmLogout').addEventListener('click', function () {
+    logAudit('Logout', 'User logged out');
+    sessionStorage.removeItem('barfs_user');
+    window.location.href = 'index.html';
+  });
+
+  document.getElementById('logoutOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeLogout();
+  });
+
+  function logAudit(action, details, result) {
+    const user = JSON.parse(sessionStorage.getItem('barfs_user') || '{}');
+    const logs = JSON.parse(localStorage.getItem('barfs_audit') || '[]');
+    logs.unshift({
+      date: new Date().toLocaleString(),
+      user: user.fullName || user.email || 'Unknown',
+      role: user.role || '',
+      action: action,
+      details: details,
+      result: result || 'Success'
+    });
+    localStorage.setItem('barfs_audit', JSON.stringify(logs));
+  }
+
+  function renderAudit() {
+    const logs = JSON.parse(localStorage.getItem('barfs_audit') || '[]');
+    const today = new Date().toLocaleDateString();
+
+    let todayCount = 0;
+    let failedCount = 0;
+
+    logs.forEach(l => {
+      const logDate = new Date(l.date).toLocaleDateString();
+      if (logDate === today) todayCount++;
+      if (l.result === 'Failed') failedCount++;
+    });
+
+    document.getElementById('totalLogs').textContent = logs.length;
+    document.getElementById('todayActions').textContent = todayCount;
+    document.getElementById('failedLogins').textContent = failedCount;
+
+    const tbody = document.getElementById('auditTableBody');
+    if (logs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:32px;">No activity logs yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = logs.map(l => `
+      <tr>
+        <td style="white-space:nowrap;font-size:12px;">${l.date}</td>
+        <td>${l.user}</td>
+        <td style="font-size:12px;color:#64748b;">${l.role}</td>
+        <td><span class="action-tag">${l.action}</span></td>
+        <td style="font-size:12px;max-width:240px;">${l.details}</td>
+        <td><span class="result-badge result-${(l.result || 'Success').toLowerCase()}">${l.result || 'Success'}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  // Export CSV
+  document.getElementById('exportBtn').addEventListener('click', function () {
+    const logs = JSON.parse(localStorage.getItem('barfs_audit') || '[]');
+    if (logs.length === 0) { alert('No audit logs to export.'); return; }
+
+    const rows = [['Entry Time', 'User', 'Role', 'Action', 'Details', 'Result']];
+    logs.forEach(l => rows.push([l.date, l.user, l.role, l.action, l.details, l.result || 'Success']));
+
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `audit_trail_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    logAudit('Export CSV', 'Exported audit trail to CSV');
+    renderAudit();
+  });
+
+  // Log page visit
+  logAudit('View Audit Trail', 'Accessed audit trail page');
+  renderAudit();
+</script>
+</body>
+</html>

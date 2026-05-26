@@ -1,0 +1,214 @@
+.login-page {
+  width: 100%;
+  min-width: 1440px;
+  min-height: 1024px;
+  display: flex;
+}
+
+.login-page .login-screen {
+  width: 1440px;
+  height: 1024px;
+  position: relative;
+  border: 1px solid;
+  border-color: #000000;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 1) 0%,
+    rgba(29, 78, 216, 1) 100%
+  );
+}
+
+.login-page .rectangle {
+  position: absolute;
+  top: 204px;
+  left: 484px;
+  width: 460px;
+  height: 600px;
+  background-color: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0px 20px 60px #0000002e;
+}
+
+.login-page .text-wrapper {
+  position: absolute;
+  top: calc(50.00% - 179px);
+  left: calc(50.00% - 202px);
+  font-family: "Inter-Regular", Helvetica;
+  font-weight: 400;
+  color: #64748b;
+  font-size: 14px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.login-page .div {
+  position: absolute;
+  top: 360px;
+  left: 510px;
+  width: 1px;
+  height: 1px;
+  background-color: #d9d9d9;
+}
+
+.login-page .img {
+  position: absolute;
+  top: 458px;
+  left: 523px;
+  width: 382px;
+  height: 55px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background-color: #ffffff;
+  padding: 0 16px;
+  font-family: "Inter-Regular", Helvetica;
+  font-size: 15px;
+  color: #000000;
+  outline: none;
+}
+
+.login-page .img:focus {
+  border-color: #1d4ed8;
+}
+
+.login-page .rectangle-2 {
+  position: absolute;
+  top: 576px;
+  left: 523px;
+  width: 382px;
+  height: 55px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background-color: #ffffff;
+  padding: 0 16px;
+  font-family: "Inter-Regular", Helvetica;
+  font-size: 15px;
+  color: #000000;
+  outline: none;
+}
+
+.login-page .rectangle-2:focus {
+  border-color: #1d4ed8;
+}
+
+.login-page .text-wrapper-2 {
+  position: absolute;
+  top: 263px;
+  left: 510px;
+  width: 60px;
+  font-family: "Inter-Bold", Helvetica;
+  font-weight: 700;
+  color: #000000;
+  font-size: 64px;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.login-page .text-wrapper-3 {
+  position: absolute;
+  top: 433px;
+  left: 524px;
+  width: 128px;
+  font-family: "Inter-Bold", Helvetica;
+  font-weight: 700;
+  color: #000000;
+  font-size: 15px;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.login-page .text-wrapper-4 {
+  position: absolute;
+  top: 547px;
+  left: 524px;
+  width: 128px;
+  font-family: "Inter-Bold", Helvetica;
+  font-weight: 700;
+  color: #000000;
+  font-size: 15px;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.login-page .rectangle-3 {
+  position: absolute;
+  top: 655px;
+  left: 533px;
+  width: 361px;
+  height: 35px;
+  background-color: #1d4ed8;
+  border-radius: 14px;
+}
+
+.login-page .text-wrapper-7 {
+  position: absolute;
+  top: 663px;
+  left: 666px;
+  width: 96px;
+  font-family: "Inter-Bold", Helvetica;
+  font-weight: 700;
+  color: #ffffff;
+  font-size: 16px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.login-page .don-t-have-an {
+  position: absolute;
+  top: 727px;
+  left: 558px;
+  width: 182px;
+  font-family: "Inter-Regular", Helvetica;
+  font-weight: 400;
+  color: #000000;
+  font-size: 16px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.login-page .text-wrapper-8 {
+  position: absolute;
+  top: 727px;
+  left: 740px;
+  width: 117px;
+  font-family: "Inter-Bold", Helvetica;
+  font-weight: 700;
+  color: #1d4ed8;
+  font-size: 16px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.login-page .text-wrapper-9 {
+  position: absolute;
+  top: 275px;
+  left: 581px;
+  font-family: "Inter-Bold", Helvetica;
+  font-weight: 700;
+  color: #1d4ed8;
+  font-size: 42px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.login-page .text-wrapper-10 {
+  position: absolute;
+  top: 387px;
+  left: 561px;
+  font-family: "Inter-Bold", Helvetica;
+  font-weight: 700;
+  color: #1d4ed8;
+  font-size: 16px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+

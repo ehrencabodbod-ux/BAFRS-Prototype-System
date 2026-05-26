@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="global.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<style>
+  /* Logout Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    animation: modalIn 0.18s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px 16px 22px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .modal-title { font-size: 16px; font-weight: 700; color: #0f172a; }
+  .modal-close {
+    background: none; border: none; font-size: 22px;
+    color: #94a3b8; cursor: pointer; line-height: 1; padding: 0 2px;
+  }
+  .modal-close:hover { color: #0f172a; }
+  .modal-body { padding: 20px 22px; }
+  .modal-footer {
+    display: flex; justify-content: flex-end; gap: 10px;
+    padding: 14px 22px 18px 22px; border-top: 1px solid #f1f5f9;
+  }
+  .btn-cancel {
+    background: #f1f5f9; color: #475569; border: none;
+    border-radius: 8px; padding: 8px 20px; font-size: 13px;
+    font-weight: 700; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-cancel:hover { background: #e2e8f0; }
+  .btn-confirm-logout {
+    background: #ef4444; color: #ffffff; border: none;
+    border-radius: 8px; padding: 8px 24px; font-size: 13px;
+    font-weight: 700; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-confirm-logout:hover { background: #dc2626; }
+</style>
+</head>
+<body>
+<div class="dashboard-page">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <span class="sidebar-icon">🏛️</span>
+      <div>
+        <div class="sidebar-title">BAFRS</div>
+        <div class="sidebar-subtitle">Barangay Poblacion<br>Las Nieves, Agusan del Norte</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item active">Dashboard</a>
+      <a href="transactions.html" class="nav-item">Transactions</a>
+      <a href="financial-reports.html" class="nav-item">Financial Reports</a>
+      <a href="audit-trail.html" class="nav-item">Audit Trail</a>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="topbar-title">Financial Dashboard</div>
+      <div class="topbar-right">
+        <img class="topbar-avatar" src="images/image.png" alt="Avatar">
+        <div class="topbar-user">
+          <span class="topbar-name" id="userName">—</span>
+          <span class="topbar-role" id="userRole">—</span>
+        </div>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="summary-label">Total Income</div>
+        <div class="summary-value" id="totalIncome">₱0.00</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Total Expenses</div>
+        <div class="summary-value" id="totalExpenses">₱0.00</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Remaining Budget</div>
+        <div class="summary-value" id="remainingBudget">₱0.00</div>
+      </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="dashTableBody">
+          <tr>
+            <td colspan="6" style="text-align:center;color:#94a3b8;padding:32px;">No transactions yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- LOGOUT CONFIRM MODAL -->
+<div class="modal-overlay" id="logoutOverlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Confirm Logout</span>
+      <button class="modal-close" id="closeLogoutModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:#475569;line-height:1.6;">Are you sure you want to log out? Your session will be ended and you will be redirected to the login page.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="cancelLogout">Cancel</button>
+      <button class="btn-confirm-logout" id="confirmLogout">Logout</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Auth guard
+  const userJson = sessionStorage.getItem('barfs_user');
+  if (!userJson) {
+    window.location.href = 'index.html';
+  } else {
+    const user = JSON.parse(userJson);
+    document.getElementById('userName').textContent = user.fullName || user.email;
+    document.getElementById('userRole').textContent = user.role || '';
+  }
+
+  // Logout modal
+  document.getElementById('logoutBtn').addEventListener('click', function () {
+    document.getElementById('logoutOverlay').classList.add('active');
+  });
+  document.getElementById('closeLogoutModal').addEventListener('click', function () {
+    document.getElementById('logoutOverlay').classList.remove('active');
+  });
+  document.getElementById('cancelLogout').addEventListener('click', function () {
+    document.getElementById('logoutOverlay').classList.remove('active');
+  });
+  document.getElementById('logoutOverlay').addEventListener('click', function (e) {
+    if (e.target === this) this.classList.remove('active');
+  });
+  document.getElementById('confirmLogout').addEventListener('click', function () {
+    logAudit('Logout', 'User logged out from Dashboard');
+    sessionStorage.removeItem('barfs_user');
+    window.location.href = 'index.html';
+  });
+
+  function logAudit(action, details) {
+    const user = JSON.parse(sessionStorage.getItem('barfs_user') || '{}');
+    const logs = JSON.parse(localStorage.getItem('barfs_audit') || '[]');
+    logs.unshift({
+      date: new Date().toLocaleString(),
+      user: user.fullName || user.email || 'Unknown',
+      role: user.role || '',
+      action: action,
+      details: details,
+      result: 'Success'
+    });
+    localStorage.setItem('barfs_audit', JSON.stringify(logs));
+  }
+
+  function formatPHP(n) {
+    return '₱' + parseFloat(n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  // Load transactions for summary + table
+  const transactions = JSON.parse(localStorage.getItem('barfs_transactions') || '[]');
+  let income = 0, expense = 0;
+  transactions.forEach(t => {
+    if (t.type === 'Income') income += parseFloat(t.amount || 0);
+    else expense += parseFloat(t.amount || 0);
+  });
+  document.getElementById('totalIncome').textContent = formatPHP(income);
+  document.getElementById('totalExpenses').textContent = formatPHP(expense);
+  document.getElementById('remainingBudget').textContent = formatPHP(income - expense);
+
+  const tbody = document.getElementById('dashTableBody');
+  if (transactions.length > 0) {
+    tbody.innerHTML = transactions.slice(0, 10).map(t => `
+      <tr>
+        <td>${t.date}</td>
+        <td><span class="badge ${t.type === 'Income' ? 'income' : 'expense'}">${t.type.toUpperCase()}</span></td>
+        <td>${t.category}</td>
+        <td>${formatPHP(t.amount)}</td>
+        <td>${t.description}</td>
+        <td>${t.status}</td>
+      </tr>
+    `).join('');
+  }
+</script>
+</body>
+</html>
